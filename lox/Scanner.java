@@ -88,6 +88,17 @@ class Scanner {
                 if (match('/'))
                     while (peek() != '\n' && !isAtEnd())
                         advance();
+
+                // TODO
+                // add comments via /* ... */
+                if (match('*')) {
+                    while (peek() != '*' && peekNext() != '/')
+                        advance();
+                    // `current` is on *
+                    advance();
+                    // `current is on /
+                    advance();
+                }
                 
                 else
                     addToken(SLASH);
@@ -156,14 +167,6 @@ class Scanner {
         addToken(STRING, value);
     }
 
-    private boolean match(char expected) {
-        if (isAtEnd()) return false;
-        if (source.charAt(current) != expected)
-            return false;
-        current ++;
-        return true;
-    }
-    
     // advance()
     // Get character at `current` and increment pointer.
     private char advance() {
@@ -173,7 +176,8 @@ class Scanner {
     // peek()
     // Look ahead 1.
     private char peek() {
-        if (isAtEnd()) return '\0';
+        if (isAtEnd())
+            return '\0';
         return source.charAt(current);
     }
 
@@ -183,6 +187,20 @@ class Scanner {
         if (current + 1 >= source.length())
             return '\0';
         return source.charAt(current + 1);
+    }
+
+    // match(expected)
+    private boolean match(char expected) {
+        if (isAtEnd())
+            return false;
+        if (source.charAt(current) != expected)
+            return false;
+        current ++;
+        return true;
+    }
+
+    private boolean isAtEnd() {
+        return current >= source.length();
     }
     
     private boolean isAlpha(char c) {
@@ -197,10 +215,6 @@ class Scanner {
 
     private boolean isAlphanumeric(char c) {
         return isAlpha(c) || isDigit(c);
-    }
-
-    private boolean isAtEnd() {
-        return current >= source.length();
     }
 
     private void addToken(TokenType type) {
