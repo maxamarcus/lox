@@ -85,13 +85,13 @@ class Scanner {
             case '/':
 
                 // comment marker
-                if (match('/'))
+                if (match('/')) {
                     while (peek() != '\n' && !isAtEnd())
                         advance();
+                }
 
-                // TODO
-                // add comments via /* ... */
-                if (match('*')) {
+                // multiline comment
+                else if (match('*')) {
                     while (peek() != '*' && peekNext() != '/')
                         advance();
                     // `current` is on *
@@ -109,6 +109,10 @@ class Scanner {
             case ' ':
             case '\r':
             case '\t':
+                break;
+
+            case '\n':
+                line ++;
                 break;
             
             default:
