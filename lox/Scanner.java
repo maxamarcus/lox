@@ -124,7 +124,7 @@ class Scanner {
 
                 // invalid character
                 else
-                    Lox.error(line, "Unexpected character.");
+                    Lox.error(line, "Unexpected character: " + c);
                 break;
         }
     }
