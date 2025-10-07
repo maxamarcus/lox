@@ -23,6 +23,8 @@ public class GenerateAst {
     private static void defineAst(
         String outputDir, String baseName, List<String> types
     ) throws IOException {
+        
+        // set file path location
         String path = outputDir + "/" + baseName + ".java";
         PrintWriter writer = new PrintWriter(path, "UTF-8");
 
@@ -32,28 +34,46 @@ public class GenerateAst {
         writer.println();
         writer.println("abstract class " + baseName + " {");
 
+        defineVisitor(writer, baseName, types);
+
         for (String type : types) {
             String className = type.split(":")[0].trim();
             String fields = type.split(":")[1].trim();
             defineType(writer, baseName, className, fields);
         }
+
+        writer.println();
+        writer.println("    abstract <R> R accept(Visitor<R> visitor);");
         writer.println("}");
         writer.close();
     }
 
-    private static void defineType(
-        PrintWriter writer, String baseName,
-        String className, String fieldList) {
+    private static void defineVisitor(PrintWriter writer,
+        String baseName, List<String> types) {
         
-        // 1 indent
+        // indent 1
+        writer.println("    interface Visitor<R> {");
+
+        for (String type : types) {
+            String typeName = type.split(":")[0].trim();
+            writer.println("        R visit" + typeName + baseName + "(" +
+                typeName + " " + baseName.toLowerCase() + ");");
+        }
+        writer.println("    }");
+    }
+
+    private static void defineType(PrintWriter writer,
+        String baseName, String className, String fieldList) {
+        
+        // indent 1
+
         writer.println("    " + "static class " + className + " extends " +
             baseName + " {");
+        // indent 2
 
-        // 2 indent
         // Constructor.
         writer.println("        " + className + "(" + fieldList + ") {");
-
-        // 3 indent
+        // indent 3
         // Store parameters in fields.
         String[] fields = fieldList.split(", ");
         for (String field : fields) {
@@ -61,17 +81,24 @@ public class GenerateAst {
             writer.println("            " + "this." + name +
                 " = " + name + ";");
         }
-
-        // 2 indent
+        // indent 2
         writer.println("        }");
 
-        //Fields.
+        // Visitor pattern.
+        writer.println();
+        writer.println("        @Override");
+        writer.println("        <R> R accept(Visitor<R> visitor) {");
+        writer.println("            return visitor.visit" +
+            className + baseName + "(this);");
+        writer.println("        }");
+
+        // Declare fields.
         writer.println();
         for (String field : fields) {
             writer.println("        " + "final " + field + ";");
         }
-
-        // 1 indent
+        // indent 1
         writer.println("    }");
+
     }
 }
