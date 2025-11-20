@@ -9,8 +9,10 @@ import static lox.TokenType.*;
 
 class Scanner {
 
-    // input string & parsed tokens
+    // input string
     private final String source;
+
+    // data structure -- parsed tokens
     private final List<Token> tokens = new ArrayList<>();
 
     private int start = 0; // start of lexeme
@@ -140,11 +142,11 @@ class Scanner {
     }
 
     private void number() {
-        while (isDigit(peek()) )
+        while (isDigit(peek() ))
             advance();
-        if (peek() == '.' && isDigit(peekNext()) ) {
+        if (peek() == '.' && isDigit(peekNext() )) {
             advance();
-            while (isDigit(peek()) )
+            while (isDigit(peek() ))
                 advance();
         }
         addToken(NUMBER,
@@ -171,10 +173,10 @@ class Scanner {
         addToken(STRING, value);
     }
 
-    // advance()
-    // Get character at `current` and increment pointer.
     private char advance() {
-        return source.charAt(current++);
+        char returnMe = source.charAt(current)
+        current ++
+        return returnMe
     }
 
     // peek()
